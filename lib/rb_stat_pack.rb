@@ -6,6 +6,3 @@ require 'rb_stat_pack/db_connection'
 module RbStatPack
 
 end
-
-require 'pry'
-require 'pg'
