@@ -22,6 +22,18 @@ module RbStatPack
             end
         end
 
+        def dup
+            retval = Crosstab.new(@orders.first.dup, @orders.last.dup, percentage: @percentage)
+
+            row_count.times do |i|
+                column_count.times do |j|
+                    retval.set(i, j, @matrix[i][j], indices: true)
+                end
+            end
+
+            retval
+        end
+
         def add(_i, _j, v)
             _i = _i.to_s
             _j = _j.to_s
@@ -36,27 +48,27 @@ module RbStatPack
             @matrix[i][j] += v
         end
 
-        def get(i, j)
-            i, j = lookup_orders(i, j)
+        def get(i, j, indices: false)
+            i, j = lookup_orders(i, j) unless indices
             @matrix[i][j]
         end
 
-        def set(i, j, v)
-            i, j = lookup_orders(i, j)
+        def set(i, j, v, indices: false)
+            i, j = lookup_orders(i, j) unless indices
             @matrix[i][j] = v
         end
 
-        def subtract(i, j, v)
-            add(i, j, -v)
+        def subtract(i, j, v, indices: false)
+            add(i, j, -v, indices: indices)
         end
 
-        def multiply(i, j, v)
-            i, j = lookup_orders(i, j)
+        def multiply(i, j, v, indices: false)
+            i, j = lookup_orders(i, j) unless indices
             @matrix[i][j] *= v
         end
 
-        def divide(i, j, v)
-            i, j = lookup_orders(i, j)
+        def divide(i, j, v, indices: false)
+            i, j = lookup_orders(i, j) unless indices
             @matrix[i][j] /= v
         end
 
@@ -142,7 +154,7 @@ module RbStatPack
 
             retval
         end
-
+        
         def print_table(decimal_places: 2)
             column_widths = Array.new(column_count + 1, 8)
 
