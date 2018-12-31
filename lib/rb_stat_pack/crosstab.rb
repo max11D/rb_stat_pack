@@ -154,7 +154,28 @@ module RbStatPack
 
             retval
         end
-        
+
+        def expected_frequencies(independent: :row)
+            return nil if @percentage # TODO throw exception
+
+            retval = Crosstab.new(@orders.first.dup, @orders.last.dup, percentage: @percentage)
+
+            indep_sums = (independent == :row ? row_sums : column_sums)
+            dep_sums = (independent == :row ? column_sums : row_sums)
+            total = indep_sums.inject(0, &:+)
+            
+            row_count.times do |i|
+                column_count.times do |j|
+                    m = (independent == :row ? j : i)
+                    n = (independent == :row ? i : j)
+                    v = dep_sums[m].to_f * indep_sums[n] / total
+                    retval.set(i, j, v, indices: true)
+                end
+            end
+
+            retval
+        end
+
         def print_table(decimal_places: 2)
             column_widths = Array.new(column_count + 1, 8)
 
